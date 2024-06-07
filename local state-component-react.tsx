@@ -1,7 +1,7 @@
-import React, { use, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
-    children: (props: { state: any }) => React.ReactNode;
+    children: (props: { state: any; set?: React.Dispatch<React.SetStateAction<any>> }) => React.ReactNode;
     onClick?: (props: { state: any; set: React.Dispatch<React.SetStateAction<any>> }) => void;
     useState: any;
     elemet?: 'button' | 'div';
@@ -9,6 +9,7 @@ interface Props {
     id?: string;
     style?: React.CSSProperties;
     type?: 'button' | 'submit' | 'reset';
+    init?: (props: { state: any; set: React.Dispatch<React.SetStateAction<any>> }) => void;
 }
 
 const ElemetState: React.FC<Props> = (props: Props) => {
@@ -28,29 +29,17 @@ const ElemetState: React.FC<Props> = (props: Props) => {
     useEffect(() => {
         setState(props?.useState ?? null);
     }, [props?.useState]);
+    useEffect(() => {
+        if (props.init)
+            props.init({ state, set })
+    }, [])
 
 
     return (
         <Element {...propsElement}>
-            {props?.children({ state })}
+            {props?.children({ state, set })}
         </Element>
     );
 };
 
 export default ElemetState;
-
-
-// implenent
-<ElemetState
-  elemet='button'
-  type='button'
-  useState={{ nama: 'ego' }}
-  onClick={({ state, set }) => {
-    set({ nama: 'egi' });
-  }}
-  className='text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center inline-flex items-center mr-0 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'>
-  {({ state }) => (
-      <b>{state?.nama}</b>
-  )}
-</ElemetState>;
-
